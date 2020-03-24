@@ -13,5 +13,7 @@ module.exports = {
   ],
   // add your custom rules here
   rules: {
+    'vue/html-quotes': ['error', 'single'],
+    'vue/singleline-html-element-content-newline': 'off'
   }
 }
