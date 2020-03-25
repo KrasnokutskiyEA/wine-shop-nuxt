@@ -1,5 +1,21 @@
 <script>
 export default {
+  async fetch ({ store }) {
+    if (store.getters['users/users'].length === 0) {
+      await store.dispatch('users/fetchUsers')
+    }
+  },
+
+  data: () => ({
+    pageTitle: 'Users page'
+  }),
+
+  computed: {
+    users () {
+      return this.$store.getters['users/users']
+    }
+  },
+
   methods: {
     openUser (user) {
       this.$router.push('/users/' + user)
@@ -10,13 +26,11 @@ export default {
 
 <template>
   <section>
-    <h1>This is Users Page!</h1>
+    <h1>{{ pageTitle }}</h1>
 
     <ul>
-      <li v-for='(user, i) of 5' :key='i'>
-        <a href='#' @click.prevent='openUser(user)'>
-          User {{ user }}
-        </a>
+      <li v-for='user of users' :key='user.id'>
+        <a href='#' @click.prevent='openUser(user.id)'>{{ user.name }}</a>
       </li>
     </ul>
   </section>

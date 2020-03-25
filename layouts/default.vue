@@ -28,14 +28,27 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Login',
-          to: '/login'
+          title: 'About',
+          to: '/about'
         }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'Wine Shop'
+    }
+  },
+
+  computed: {
+    hasToken () {
+      return this.$store.getters.hasToken
+    }
+  },
+
+  methods: {
+    logout () {
+      this.$store.dispatch('logout')
+      this.$router.push('/')
     }
   }
 }
@@ -43,6 +56,7 @@ export default {
 
 <template>
   <v-app dark>
+    <!-- SIDE MENU LEFT-->
     <v-navigation-drawer
       v-model='drawer'
       :mini-variant='miniVariant'
@@ -61,45 +75,49 @@ export default {
           <v-list-item-action>
             <v-icon>{{ item.icon }}</v-icon>
           </v-list-item-action>
+
           <v-list-item-content>
             <v-list-item-title v-text='item.title' />
           </v-list-item-content>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
+    <!-- -->
+
+    <!-- TOP MENU -->
     <v-app-bar
       :clipped-left='clipped'
       fixed
       app
     >
       <v-app-bar-nav-icon @click.stop='drawer = !drawer' />
-      <v-btn
-        icon
-        @click.stop='miniVariant = !miniVariant'
-      >
+
+      <v-btn icon @click.stop='miniVariant = !miniVariant'>
         <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
       </v-btn>
-      <v-btn
-        icon
-        @click.stop='clipped = !clipped'
-      >
+
+      <v-btn icon @click.stop='clipped = !clipped'>
         <v-icon>mdi-application</v-icon>
       </v-btn>
-      <v-btn
-        icon
-        @click.stop='fixed = !fixed'
-      >
+
+      <v-btn icon @click.stop='fixed = !fixed'>
         <v-icon>mdi-minus</v-icon>
       </v-btn>
+
       <v-toolbar-title v-text='title' />
+
       <v-spacer />
-      <v-btn
-        icon
-        @click.stop='rightDrawer = !rightDrawer'
-      >
+
+      <v-btn v-if='!hasToken' to='/login' nuxt>Login</v-btn>
+      <v-btn v-else @click.stop='logout'>Logout</v-btn>
+
+      <v-btn icon @click.stop='rightDrawer = !rightDrawer'>
         <v-icon>mdi-menu</v-icon>
       </v-btn>
     </v-app-bar>
+    <!-- -->
+
+    <!-- MAIN AREA -->
     <v-content>
       <v-container>
         <!-- Cюда рендерим страницы -->
@@ -107,6 +125,9 @@ export default {
         <!-- -->
       </v-container>
     </v-content>
+    <!-- -->
+
+    <!-- SIDE MENU RIGHT -->
     <v-navigation-drawer
       v-model='rightDrawer'
       :right='right'
@@ -124,11 +145,12 @@ export default {
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-footer
-      :fixed='fixed'
-      app
-    >
+    <!-- -->
+
+    <!-- Footer -->
+    <v-footer :fixed='fixed' app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
+    <!-- -->
   </v-app>
 </template>
