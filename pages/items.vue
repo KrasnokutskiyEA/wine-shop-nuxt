@@ -1,9 +1,19 @@
 <script>
+import { mapActions } from 'vuex'
+
 export default {
-  // components: {
-  //   Logo,
-  //   VuetifyLogo
-  // }
+  name: 'Items',
+
+  mounted () {
+    // eslint-disable-next-line
+    this.$fireStore.collection('products').onSnapshot(res => this.getItems(res))
+  },
+
+  methods: {
+    ...mapActions('items', [
+      'getItems'
+    ])
+  }
 }
 </script>
 

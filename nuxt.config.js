@@ -44,7 +44,25 @@ export default {
   */
   modules: [
     '@nuxtjs/pwa',
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    [
+      '@nuxtjs/firebase',
+      {
+        config: {
+          apiKey: 'AIzaSyCmmkMKGeGDVpekVADO30upHUb4bz-PFOA',
+          authDomain: 'wine-shop-nuxt.firebaseapp.com',
+          databaseURL: 'https://wine-shop-nuxt.firebaseio.com',
+          projectId: 'wine-shop-nuxt',
+          storageBucket: 'wine-shop-nuxt.appspot.com',
+          messagingSenderId: '1090993864242',
+          appId: '1:1090993864242:web:7130840a0b438aa353862b',
+          measurementId: 'G-WP4KM4VE3Z'
+        },
+        services: {
+          firestore: true
+        }
+      }
+    ]
   ],
   /*
   ** vuetify module configuration
