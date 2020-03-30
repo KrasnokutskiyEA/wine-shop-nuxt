@@ -1,4 +1,6 @@
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   async fetch ({ store }) {
     if (store.getters['users/users'].length === 0) {
@@ -11,9 +13,9 @@ export default {
   }),
 
   computed: {
-    users () {
-      return this.$store.getters['users/users']
-    }
+    ...mapGetters('users', [
+      'users'
+    ])
   },
 
   methods: {

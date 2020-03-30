@@ -22,6 +22,6 @@ export default {
       <nuxt-link to='/'>To Home Page...</nuxt-link>
     </p>
 
-    <v-btn @click.stop='tryLogin'>Login</v-btn>
+    <v-btn @click='tryLogin'>Login</v-btn>
   </section>
 </template>

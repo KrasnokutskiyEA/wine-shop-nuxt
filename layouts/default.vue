@@ -1,4 +1,6 @@
 <script>
+import { mapGetters, mapActions } from 'vuex'
+
 export default {
   data () {
     return {
@@ -40,14 +42,18 @@ export default {
   },
 
   computed: {
-    hasToken () {
-      return this.$store.getters.hasToken
-    }
+    ...mapGetters([
+      'hasToken'
+    ])
   },
 
   methods: {
-    logout () {
-      this.$store.dispatch('logout')
+    ...mapActions([
+      'logout'
+    ]),
+
+    goHome () {
+      this.logout()
       this.$router.push('/')
     }
   }
@@ -109,7 +115,7 @@ export default {
       <v-spacer />
 
       <v-btn v-if='!hasToken' to='/login' nuxt>Login</v-btn>
-      <v-btn v-else @click.stop='logout'>Logout</v-btn>
+      <v-btn v-else @click='goHome'>Logout</v-btn>
 
       <v-btn icon @click.stop='rightDrawer = !rightDrawer'>
         <v-icon>mdi-menu</v-icon>
