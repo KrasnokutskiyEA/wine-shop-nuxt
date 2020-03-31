@@ -1,32 +1,74 @@
+import Vue from 'vue'
+
 export const state = () => ({
-  token: null
+  recievedItems: [],
+  initItems: false
 })
 
 export const getters = {
-  hasToken: state => !!state.token
+  recievedItems: state => state.recievedItems,
+  initItems: state => state.initItems
 }
 
 export const mutations = {
-  SET_TOKEN (state, token) {
-    state.token = token
+  ADD_ITEMS_DATA (state, doc) {
+    !state.recievedItems.some(i => i.id === doc.id) &&
+    state.recievedItems.push(doc)
   },
 
-  RESET_TOKEN (state) {
-    state.token = null
+  MODIFY_ITEMS_DATA (state, doc) {
+    const i = state.recievedItems.findIndex(i => i.id === doc.id)
+    Vue.set(state.recievedItems, i, doc)
+  },
+
+  REMOVE_ITEMS_DATA (state, doc) {
+    state.recievedItems = state.recievedItems.filter(i => i.id !== doc.id)
+  },
+
+  SET_INIT_ITEMS (state) {
+    Vue.set(state, 'initItems', true)
   }
 }
 
 export const actions = {
   nuxtServerInit ({ dispatch }) {
     // eslint-disable-next-line
-    console.log('------Starting App-----')
+    console.log('------Starting App-----this=', this)
   },
 
-  login ({ commit }) {
-    commit('SET_TOKEN', 'truetoken')
-  },
+  getItems: async ({ commit, getters }, res) => {
+    await res.docChanges().forEach((change) => {
+      const doc = { ...change.doc.data(), id: change.doc.id }
 
-  logout ({ commit }) {
-    commit('RESET_TOKEN')
+      // forming data array
+      switch (change.type) {
+        case 'added':
+          commit('ADD_ITEMS_DATA', doc)
+          break
+        case 'modified':
+          commit('MODIFY_ITEMS_DATA', doc)
+          break
+        case 'removed':
+          commit('REMOVE_ITEMS_DATA', doc)
+          break
+        default:
+          break
+      }
+
+      !getters.init && commit('SET_INIT_ITEMS')
+    })
   }
+
+  // addItem: ({ commit, getters }, itemName) => {
+  //   const item = {
+  //     name: itemName
+  //   }
+  //   this.$fireStore.collection('items').add(item).then((res) => {})
+  // }
+
+  // deleteItem: ({ commit, getters }, id) => {
+  //   // eslint-disable-next-line
+  //   console.log('------this=', this)
+  //   this.$fireStore.collection('items').doc(id).delete()
+  // }
 }

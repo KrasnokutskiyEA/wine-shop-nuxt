@@ -1,10 +1,16 @@
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   layout: 'empty',
 
   methods: {
+    ...mapActions('main', [
+      'login'
+    ]),
+
     tryLogin () {
-      this.$store.dispatch('login')
+      this.login()
       this.$router.push('/')
     }
   }

@@ -31,7 +31,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async getItems ({ commit, getters }, res) {
+  getItems: async ({ commit, getters }, res) => {
     // eslint-disable-next-line
     await res.docChanges().forEach(change => {
       const doc = { ...change.doc.data(), id: change.doc.id }
@@ -53,5 +53,18 @@ export const actions = {
 
       !getters.init && commit('SET_INIT_ITEMS')
     })
+  },
+
+  addItem: ({ commit, getters }, itemName) => {
+    const item = {
+      name: itemName
+    }
+    this.$fireStore.collection('items').add(item).then((res) => {})
+  },
+
+  deleteItem: async ({ commit, getters }, id) => {
+    // eslint-disable-next-line
+    console.log('------this=', )
+    await this.$fireStore.collection('items').doc(id).delete()
   }
 }

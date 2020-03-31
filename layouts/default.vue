@@ -42,13 +42,13 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
+    ...mapGetters('main', [
       'hasToken'
     ])
   },
 
   methods: {
-    ...mapActions([
+    ...mapActions('main', [
       'logout'
     ]),
 
