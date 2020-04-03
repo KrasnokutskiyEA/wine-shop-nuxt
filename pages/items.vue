@@ -9,9 +9,17 @@ export default {
     ItemsDumb
   },
 
-  data: () => ({
-    itemName: ''
-  }),
+  // async fetch ({ store }) {
+  //   if (store.getters.products.length === 0) {
+  //     this.$fireStore.collection('products').onSnapshot(res => store.dispatch(getItems(res)))
+  //   }
+  // },
+
+  data () {
+    return {
+      itemName: ''
+    }
+  },
 
   computed: {
     ...mapGetters([
@@ -20,26 +28,21 @@ export default {
     ])
   },
 
+  created () {
+    this.$fireStore.collection('products').onSnapshot(res => this.listenItems(res))
+  },
+
   mounted () {
-    // eslint-disable-next-line
-    this.$fireStore.collection('products').onSnapshot(res => this.getItems(res))
+    this.getItems()
   },
 
   methods: {
     ...mapActions([
-      'getItems'
-    ]),
-
-    deleteItem (id) {
-      this.$fireStore.collection('products').doc(id).delete()
-    },
-
-    addItem (itemName) {
-      const item = {
-        name: itemName
-      }
-      this.$fireStore.collection('products').add(item).then((res) => {})
-    }
+      'getItems',
+      'listenItems',
+      'addItem',
+      'deleteItem'
+    ])
   }
 }
 </script>
@@ -69,6 +72,7 @@ export default {
     <v-row>
       <v-col cols='4'>
         <div v-if='!initItems'>Initializing...</div>
+
         <ItemsDumb
           v-else
           :items='recievedItems'

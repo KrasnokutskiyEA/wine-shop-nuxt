@@ -11,6 +11,10 @@ export const getters = {
 }
 
 export const mutations = {
+  ADD_ITEMS_DATA_INIT (state, doc) {
+    state.recievedItems = [...state.recievedItems, ...[doc]]
+  },
+
   ADD_ITEMS_DATA (state, doc) {
     !state.recievedItems.some(i => i.id === doc.id) &&
     state.recievedItems.push(doc)
@@ -33,42 +37,48 @@ export const mutations = {
 export const actions = {
   nuxtServerInit ({ dispatch }) {
     // eslint-disable-next-line
-    console.log('------Starting App-----this=', this)
+    // console.log('------Starting App-----this=', this)
   },
 
-  getItems: async ({ commit, getters }, res) => {
-    await res.docChanges().forEach((change) => {
+  async getItems ({ commit, getters }) {
+    try {
+      const res = await this.$fireStore.collection('products').get()
+      res.forEach(doc => commit('ADD_ITEMS_DATA_INIT', { id: doc.id, ...doc.data() }))
+      !getters.initItems && commit('SET_INIT_ITEMS')
+    } catch (e) {
+      // eslint-disable-next-line
+      console.log('error=', e)
+    }
+  },
+
+  listenItems ({ commit, getters }, res) {
+    res.docChanges().forEach((change) => {
       const doc = { ...change.doc.data(), id: change.doc.id }
 
-      // forming data array
       switch (change.type) {
-        case 'added':
-          commit('ADD_ITEMS_DATA', doc)
-          break
-        case 'modified':
-          commit('MODIFY_ITEMS_DATA', doc)
-          break
-        case 'removed':
-          commit('REMOVE_ITEMS_DATA', doc)
-          break
-        default:
-          break
+        case 'added': return getters.initItems && commit('ADD_ITEMS_DATA', doc)
+        case 'modified': return commit('MODIFY_ITEMS_DATA', doc)
+        case 'removed': return commit('REMOVE_ITEMS_DATA', doc)
       }
-
-      !getters.init && commit('SET_INIT_ITEMS')
     })
+  },
+
+  async addItem ({ commit, getters }, itemName) {
+    try {
+      const item = { name: itemName }
+      await this.$fireStore.collection('products').add(item)
+    } catch (e) {
+      // eslint-disable-next-line
+      console.log('error=', e)
+    }
+  },
+
+  async deleteItem ({ commit, getters }, id) {
+    try {
+      await this.$fireStore.collection('products').doc(id).delete()
+    } catch (e) {
+      // eslint-disable-next-line
+      console.log('error=', e)
+    }
   }
-
-  // addItem: ({ commit, getters }, itemName) => {
-  //   const item = {
-  //     name: itemName
-  //   }
-  //   this.$fireStore.collection('items').add(item).then((res) => {})
-  // }
-
-  // deleteItem: ({ commit, getters }, id) => {
-  //   // eslint-disable-next-line
-  //   console.log('------this=', this)
-  //   this.$fireStore.collection('items').doc(id).delete()
-  // }
 }
